@@ -6,13 +6,16 @@
  * Author: Roy van Kaathoven
  * Contact: ik@royvankaathoven.nl
  */
-(function(document, window) {
-  'use strict';
+(function (document, window) {
+  "use strict";
 
-  var inlineAttachment = function(options, instance) {
-    this.settings = inlineAttachment.util.merge(options, inlineAttachment.defaults);
+  var inlineAttachment = function (options, instance) {
+    this.settings = inlineAttachment.util.merge(
+      options,
+      inlineAttachment.defaults
+    );
     this.editor = instance;
-    this.filenameTag = '{filename}';
+    this.filenameTag = "{filename}";
     this.lastValue = null;
   };
 
@@ -27,14 +30,13 @@
    * Utility functions
    */
   inlineAttachment.util = {
-
     /**
      * Simple function to merge the given objects
      *
      * @param {Object[]} object Multiple object parameters
      * @returns {Object}
      */
-    merge: function() {
+    merge: function () {
       var result = {};
       for (var i = arguments.length - 1; i >= 0; i--) {
         var obj = arguments[i];
@@ -53,7 +55,7 @@
      * @param {String} appended Current content
      * @param {String} previous Value which should be appended after the current content
      */
-    appendInItsOwnLine: function(previous, appended) {
+    appendInItsOwnLine: function (previous, appended) {
       return (previous + "\n\n[[D]]" + appended)
         .replace(/(\n{2,})\[\[D\]\]/, "\n\n")
         .replace(/^(\n*)/, "");
@@ -65,13 +67,13 @@
      * @param  {HtmlElement} el
      * @param  {String} value Text which will be inserted at the cursor position
      */
-    insertTextAtCursor: function(el, text) {
+    insertTextAtCursor: function (el, text) {
       var scrollPos = el.scrollTop,
         strPos = 0,
         browser = false,
         range;
 
-      if ((el.selectionStart || el.selectionStart === '0')) {
+      if (el.selectionStart || el.selectionStart === "0") {
         browser = "ff";
       } else if (document.selection) {
         browser = "ie";
@@ -80,22 +82,22 @@
       if (browser === "ie") {
         el.focus();
         range = document.selection.createRange();
-        range.moveStart('character', -el.value.length);
+        range.moveStart("character", -el.value.length);
         strPos = range.text.length;
       } else if (browser === "ff") {
         strPos = el.selectionStart;
       }
 
-      var front = (el.value).substring(0, strPos);
-      var back = (el.value).substring(strPos, el.value.length);
+      var front = el.value.substring(0, strPos);
+      var back = el.value.substring(strPos, el.value.length);
       el.value = front + text + back;
       strPos = strPos + text.length;
       if (browser === "ie") {
         el.focus();
         range = document.selection.createRange();
-        range.moveStart('character', -el.value.length);
-        range.moveStart('character', strPos);
-        range.moveEnd('character', 0);
+        range.moveStart("character", -el.value.length);
+        range.moveStart("character", strPos);
+        range.moveEnd("character", 0);
         range.select();
       } else if (browser === "ff") {
         el.selectionStart = strPos;
@@ -103,7 +105,7 @@
         el.focus();
       }
       el.scrollTop = scrollPos;
-    }
+    },
   };
 
   /**
@@ -115,44 +117,39 @@
     /**
      * URL where the file will be send
      */
-    uploadUrl: 'upload_attachment.php',
+    uploadUrl: "upload_attachment.php",
 
     /**
      * Which method will be used to send the file to the upload URL
      */
-    uploadMethod: 'POST',
+    uploadMethod: "POST",
 
     /**
      * Name in which the file will be placed
      */
-    uploadFieldName: 'file',
+    uploadFieldName: "file",
 
     /**
      * Extension which will be used when a file extension could not
      * be detected
      */
-    defaultExtension: 'png',
+    defaultExtension: "png",
 
     /**
      * JSON field which refers to the uploaded file URL
      */
-    jsonFieldName: 'filename',
+    jsonFieldName: "filename",
 
     /**
      * Allowed MIME types
      */
-    allowedTypes: [
-      'image/jpeg',
-      'image/png',
-      'image/jpg',
-      'image/gif'
-    ],
+    allowedTypes: ["image/jpeg", "image/png", "image/jpg", "image/gif"],
 
     /**
      * Text which will be inserted when dropping or pasting a file.
      * Acts as a placeholder which will be replaced when the file is done with uploading
      */
-    progressText: '![Uploading file...]()',
+    progressText: "![Uploading file...]()",
 
     /**
      * When a file has successfully been uploaded the progressText
@@ -179,21 +176,21 @@
     /**
      * Before the file is send
      */
-    beforeFileUpload: function() {
+    beforeFileUpload: function () {
       return true;
     },
 
     /**
      * Triggers when a file is dropped or pasted
      */
-    onFileReceived: function() {},
+    onFileReceived: function () {},
 
     /**
      * Custom upload handler
      *
      * @return {Boolean} when false is returned it will prevent default upload behavior
      */
-    onFileUploadResponse: function() {
+    onFileUploadResponse: function () {
       return true;
     },
 
@@ -203,14 +200,14 @@
      *
      * @return {Boolean} when false is returned it will prevent default error behavior
      */
-    onFileUploadError: function() {
+    onFileUploadError: function () {
       return true;
     },
 
     /**
      * When a file has succesfully been uploaded
      */
-    onFileUploaded: function() {}
+    onFileUploaded: function () {},
   };
 
   /**
@@ -219,14 +216,14 @@
    * @param  {Blob} file blob data received from event.dataTransfer object
    * @return {XMLHttpRequest} request object which sends the file
    */
-  inlineAttachment.prototype.uploadFile = function(file) {
+  inlineAttachment.prototype.uploadFile = function (file) {
     var me = this,
       formData = new FormData(),
       xhr = new XMLHttpRequest(),
       settings = this.settings,
       extension = settings.defaultExtension || settings.defualtExtension;
 
-    if (typeof settings.setupFormData === 'function') {
+    if (typeof settings.setupFormData === "function") {
       settings.setupFormData(formData, file);
     }
 
@@ -240,7 +237,7 @@
     }
 
     var remoteFilename = "image-" + Date.now() + "." + extension;
-    if (typeof settings.remoteFilename === 'function') {
+    if (typeof settings.remoteFilename === "function") {
       remoteFilename = settings.remoteFilename(file);
     }
 
@@ -256,20 +253,27 @@
     }
 
     console.log("ABOUT TO POST: " + settings.uploadUrl);
-    xhr.open('POST', settings.uploadUrl);
+    xhr.open("POST", settings.uploadUrl);
 
     // Add any available extra headers
     if (typeof settings.extraHeaders === "object") {
-        for (var header in settings.extraHeaders) {
-            if (settings.extraHeaders.hasOwnProperty(header)) {
-                xhr.setRequestHeader(header, settings.extraHeaders[header]);
-                console.log("EXTRA HEADER: " + settings.extraHeaders[header]);
-            }
+      for (var header in settings.extraHeaders) {
+        if (settings.extraHeaders.hasOwnProperty(header)) {
+          xhr.setRequestHeader(header, settings.extraHeaders[header]);
+          console.log("EXTRA HEADER: " + settings.extraHeaders[header]);
         }
+      }
     }
 
-    xhr.onload = function() {
-      console.log("GOT RESPONSE " + xhr.status + ": " + xhr.statusText + " " + xhr.responseText);
+    xhr.onload = function () {
+      console.log(
+        "GOT RESPONSE " +
+          xhr.status +
+          ": " +
+          xhr.statusText +
+          " " +
+          xhr.responseText
+      );
       // If HTTP status is OK or Created
       if (xhr.status === 200 || xhr.status === 201) {
         me.onFileUploadResponse(xhr);
@@ -288,9 +292,11 @@
    *
    * @param {File} clipboard data file
    */
-  inlineAttachment.prototype.isFileAllowed = function(file) {
-    if (file.kind === 'string') { return false; }
-    if (this.settings.allowedTypes.indexOf('*') === 0){
+  inlineAttachment.prototype.isFileAllowed = function (file) {
+    if (file.kind === "string") {
+      return false;
+    }
+    if (this.settings.allowedTypes.indexOf("*") === 0) {
       return true;
     } else {
       return this.settings.allowedTypes.indexOf(file.type) >= 0;
@@ -303,14 +309,14 @@
    * @param  {XMLHttpRequest} xhr
    * @return {Void}
    */
-  inlineAttachment.prototype.onFileUploadResponse = function(xhr) {
+  inlineAttachment.prototype.onFileUploadResponse = function (xhr) {
     if (this.settings.onFileUploadResponse.call(this, xhr) !== false) {
       var result = JSON.parse(xhr.responseText),
         filename = result[this.settings.jsonFieldName];
 
       if (result && filename) {
         var newValue;
-        if (typeof this.settings.urlText === 'function') {
+        if (typeof this.settings.urlText === "function") {
           newValue = this.settings.urlText.call(this, filename, result);
         } else {
           newValue = this.settings.urlText.replace(this.filenameTag, filename);
@@ -322,16 +328,17 @@
     }
   };
 
-
   /**
    * Called when a file has failed to upload
    *
    * @param  {XMLHttpRequest} xhr
    * @return {Void}
    */
-  inlineAttachment.prototype.onFileUploadError = function(xhr) {
+  inlineAttachment.prototype.onFileUploadError = function (xhr) {
     if (this.settings.onFileUploadError.call(this, xhr) !== false) {
-      var text = this.editor.getValue().replace(this.lastValue, this.settings.errorText);
+      var text = this.editor
+        .getValue()
+        .replace(this.lastValue, this.settings.errorText);
       this.editor.setValue(text);
     }
   };
@@ -342,20 +349,19 @@
    * @param  {File} file
    * @return {Void}
    */
-  inlineAttachment.prototype.onFileInserted = function(file) {
+  inlineAttachment.prototype.onFileInserted = function (file) {
     if (this.settings.onFileReceived.call(this, file) !== false) {
       this.lastValue = this.settings.progressText;
       this.editor.insertValue(this.lastValue);
     }
   };
 
-
   /**
    * Called when a paste event occured
    * @param  {Event} e
    * @return {Boolean} if the event was handled
    */
-  inlineAttachment.prototype.onPaste = function(e) {
+  inlineAttachment.prototype.onPaste = function (e) {
     var result = false,
       clipboardData = e.clipboardData,
       items;
@@ -373,17 +379,26 @@
       }
     }
 
-    if (result) { e.preventDefault(); }
+    if (result) {
+      e.preventDefault();
+    }
 
     return result;
   };
+  const hamburger = document.querySelector(".hamburger-menu");
+  const menu = document.querySelector(".menu");
+
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("is-active");
+    menu.classList.toggle("is-active");
+  });
 
   /**
    * Called when a drop event occures
    * @param  {Event} e
    * @return {Boolean} if the event was handled
    */
-  inlineAttachment.prototype.onDrop = function(e) {
+  inlineAttachment.prototype.onDrop = function (e) {
     var result = false;
     for (var i = 0; i < e.dataTransfer.files.length; i++) {
       var file = e.dataTransfer.files[i];
@@ -398,5 +413,4 @@
   };
 
   window.inlineAttachment = inlineAttachment;
-
 })(document, window);

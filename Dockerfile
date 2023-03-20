@@ -9,6 +9,7 @@ ADD . /go/src/github.com/compscidr/goblog/
 # (You may fetch or manage dependencies here,
 # either manually or with a tool like "godep".)
 ARG VERSION
+# trunk-ignore(hadolint/DL3003)
 RUN cd /go/src/github.com/compscidr/goblog/ && go build -ldflags="-X 'main.Version=$VERSION'" -v .
 
 # Run the outyet command by default when the container starts.

@@ -1,9 +1,11 @@
+// trunk-ignore(gofmt)
 package auth
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	// trunk-ignore(golangci-lint/staticcheck)
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -86,6 +88,7 @@ func (a Auth) requestAccessToken(parsedCode string) (*AccessTokenResponse, error
 		return nil, errors.New(bodyString)
 	}
 
+	// trunk-ignore(golangci-lint/errcheck)
 	json.Unmarshal(bodyBytes, &data)
 	return data, nil
 }
@@ -106,6 +109,7 @@ func (a Auth) formatRequest(r *http.Request) string {
 
 	// If this is a POST, add post data
 	if r.Method == "POST" {
+		// trunk-ignore(golangci-lint/errcheck)
 		r.ParseForm()
 		request = append(request, "\n")
 		request = append(request, r.Form.Encode())
@@ -146,6 +150,7 @@ func (a Auth) RequestUser(accessToken string) (*BlogUser, error) {
 		return nil, errors.New(bodyString)
 	}
 
+	// trunk-ignore(golangci-lint/errcheck)
 	json.Unmarshal(bodyBytes, &data)
 	data.AccessToken = accessToken
 
@@ -187,6 +192,7 @@ func (a Auth) LoginPostHandler(c *gin.Context) {
 	//save the access token in the session
 	session := sessions.Default(c)
 	session.Set("token", data.AccessToken)
+	// trunk-ignore(golangci-lint/errcheck)
 	session.Save()
 
 	c.JSON(http.StatusOK, existingUser)
@@ -223,6 +229,7 @@ func (a Auth) IsAdmin(c *gin.Context) bool {
 	// next make sure the logged in user is an admin
 	var adminUser AdminUser
 	err = a.db.Where("blog_user_id = ?", existingUser.ID).First(&adminUser).Error
+	// trunk-ignore(golangci-lint/gosimple)
 	if err != nil {
 		return false
 	}
@@ -238,6 +245,7 @@ func (a Auth) IsLoggedIn(c *gin.Context) bool {
 	}
 	var existingUser BlogUser
 	err := a.db.Where("access_token = ?", token).First(&existingUser).Error
+	// trunk-ignore(golangci-lint/gosimple)
 	if err != nil {
 		return false
 	}

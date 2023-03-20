@@ -39,7 +39,7 @@ func setup_wizard() {
 	router.Use(static.Serve("/", static.LocalFile("www", false)))
 	router.GET("/login", _wizard.LoginCode)
 	// router.Run("0.0.0.0:7000")
-	server := endless.NewServer(":7000", router)
+	server := endless.NewServer(":9000", router)
 	server.BeforeBegin = func(add string) {
 		log.Printf("Actual pid is %d", syscall.Getpid())
 		pid := syscall.Getpid()
@@ -59,6 +59,7 @@ func setup_wizard() {
 			return
 		}
 	}
+	// trunk-ignore(golangci-lint/errcheck)
 	server.ListenAndServe()
 }
 
@@ -170,7 +171,7 @@ func main() {
 
 	router.NoRoute(_blog.NoRoute)
 
-	err = endless.ListenAndServe(":7000", router)
+	err = endless.ListenAndServe(":9000", router)
 	if err != nil {
 		log.Println("Error running goblog server: " + err.Error())
 	}

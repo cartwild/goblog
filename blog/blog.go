@@ -307,7 +307,6 @@ func (b Blog) Archives(c *gin.Context) {
 		"version":   b.Version,
 		"title":     "Blog Archives",
 	})
-}
 
 func (b Blog) Sitemap(c *gin.Context) {
 	sm := stm.NewSitemap(1)
